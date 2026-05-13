@@ -1,0 +1,846 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Internet Simulation System</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-dark">
+      <div class="container-fluid px-4">
+        <span class="navbar-brand">🌐 Internet Simulation System</span>
+        <span class="text-secondary small fst-italic"
+          >From Packet to Application — TCP/IP Model</span
+        >
+      </div>
+    </nav>
+
+    <!-- MODULE TABS -->
+    <ul class="nav nav-tabs module-tabs" id="moduleTabs">
+      <li class="nav-item">
+        <a class="nav-link active" data-bs-toggle="tab" href="#mod1">
+          📦 Module 1<br /><small>Packet Core</small>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="tab" href="#mod2">
+          🗺️ Module 2<br /><small>Routing</small>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="tab" href="#mod3">
+          🔗 Module 3<br /><small>TCP vs UDP</small>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="tab" href="#mod4">
+          🌍 Module 4<br /><small>App Layer</small>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link end2end-tab" data-bs-toggle="tab" href="#mod5">
+          ⚡ Module 5<br /><small>End-to-End</small>
+        </a>
+      </li>
+    </ul>
+
+    <div class="tab-content" id="moduleContent">
+      <!-- ============================================================ -->
+      <!-- MODULE 1: PACKET CORE                                        -->
+      <!-- ============================================================ -->
+      <div class="tab-pane fade show active" id="mod1">
+        <div class="container py-4">
+          <div class="module-title">
+            📦 Packet Core — Store-and-Forward Simulation
+          </div>
+
+          <div class="row justify-content-center mb-4">
+            <div class="col-lg-6">
+              <div class="card">
+                <div class="card-header">
+                  <h6 class="mb-0 text-info">⚙️ Thông số mạng</h6>
+                </div>
+                <div class="card-body">
+                  <div class="row g-2">
+                    <div class="col-8">
+                      <label class="form-label text-secondary small"
+                        >Kích thước message (bits)</label
+                      >
+                      <input
+                        type="number"
+                        id="m1-msgSize"
+                        class="form-control form-control-sm"
+                        value="8000"
+                        min="100"
+                      />
+                    </div>
+                    <div class="col-8">
+                      <label class="form-label text-secondary small"
+                        >Kích thước mỗi packet (bits)</label
+                      >
+                      <input
+                        type="number"
+                        id="m1-pktSize"
+                        class="form-control form-control-sm"
+                        value="1000"
+                        min="100"
+                      />
+                    </div>
+                    <div class="col-8">
+                      <label class="form-label text-secondary small"
+                        >Số router trung gian</label
+                      >
+                      <input
+                        type="number"
+                        id="m1-numRouters"
+                        class="form-control form-control-sm"
+                        value="3"
+                        min="1"
+                        max="6"
+                      />
+                    </div>
+                    <div class="col-8">
+                      <label class="form-label text-secondary small"
+                        >Tốc độ link R (bps)</label
+                      >
+                      <input
+                        type="number"
+                        id="m1-linkRate"
+                        class="form-control form-control-sm"
+                        value="1000"
+                        min="100"
+                      />
+                    </div>
+                    <div class="col-8">
+                      <label class="form-label text-secondary small"
+                        >Propagation delay / link (ms)</label
+                      >
+                      <input
+                        type="number"
+                        id="m1-propDelay"
+                        class="form-control form-control-sm"
+                        value="10"
+                        min="0"
+                      />
+                    </div>
+                    <div class="col-8">
+                      <div class="form-check form-switch mt-2">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="m1-enableLoss"
+                        />
+                        <label
+                          class="form-check-label text-secondary small"
+                          for="m1-enableLoss"
+                          >Bật Packet Loss</label
+                        >
+                      </div>
+                      <div id="m1-lossGroup" style="display: none">
+                        <input
+                          type="range"
+                          id="m1-lossRate"
+                          class="form-range mt-1"
+                          min="0"
+                          max="50"
+                          value="20"
+                          oninput="
+                            document.getElementById('m1-lossVal').textContent =
+                              this.value + '%'
+                          "
+                        />
+                        <span class="text-secondary small"
+                          >Loss rate: <span id="m1-lossVal">20%</span></span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                  <div class="text-center mt-3">
+                    <button
+                      onclick="mod1Run()"
+                      class="btn btn-info px-5 fw-bold"
+                    >
+                      ▶ Simulate
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row justify-content-center mb-3">
+            <div class="col-lg-10">
+              <div id="m1-canvas" class="network-canvas"></div>
+            </div>
+          </div>
+
+          <div id="m1-results" class="d-none">
+            <div class="row justify-content-center g-3">
+              <div class="col-lg-10">
+                <div class="card">
+                  <div class="card-header">
+                    <h6 class="mb-0 text-info">📐 Công thức & Delay</h6>
+                  </div>
+                  <div class="card-body" id="m1-formulas"></div>
+                </div>
+              </div>
+              <div class="col-lg-7">
+                <div class="card">
+                  <div class="card-header">
+                    <h6 class="mb-0 text-secondary">📋 Bảng từng Packet</h6>
+                  </div>
+                  <div class="card-body p-0">
+                    <table class="table table-dark table-hover table-sm mb-0">
+                      <thead>
+                        <tr>
+                          <th>Packet</th>
+                          <th>Size</th>
+                          <th>Arrive (ms)</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody id="m1-table"></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-3">
+                <div class="card h-100">
+                  <div class="card-header">
+                    <h6 class="mb-0 text-secondary">📊 Tổng kết</h6>
+                  </div>
+                  <div class="card-body" id="m1-summary"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- MODULE 2: ROUTING                                            -->
+      <!-- ============================================================ -->
+      <div class="tab-pane fade" id="mod2">
+        <div class="container py-4">
+          <div class="module-title">
+            🗺️ Network Topology & Routing Algorithm
+          </div>
+
+          <div class="row g-3">
+            <div class="col-lg-3">
+              <div class="card">
+                <div class="card-header">
+                  <h6 class="mb-0 text-info">⚙️ Cấu hình</h6>
+                </div>
+                <div class="card-body">
+                  <label class="form-label text-secondary small"
+                    >Số nodes</label
+                  >
+                  <input
+                    type="range"
+                    id="m2-numNodes"
+                    class="form-range"
+                    min="4"
+                    max="8"
+                    value="6"
+                    oninput="
+                      document.getElementById('m2-nodeVal').textContent =
+                        this.value
+                    "
+                  />
+                  <div class="text-center mb-3">
+                    <span class="text-info fw-bold" id="m2-nodeVal">6</span>
+                    <span class="text-secondary small">nodes</span>
+                  </div>
+
+                  <label class="form-label text-secondary small"
+                    >Thuật toán</label
+                  >
+                  <select id="m2-algo" class="form-select form-select-sm mb-3">
+                    <option value="dijkstra">Dijkstra (SPF)</option>
+                    <option value="bellman">Bellman-Ford (DV)</option>
+                  </select>
+
+                  <label class="form-label text-secondary small">Source</label>
+                  <select
+                    id="m2-src"
+                    class="form-select form-select-sm mb-2"
+                  ></select>
+                  <label class="form-label text-secondary small"
+                    >Destination</label
+                  >
+                  <select
+                    id="m2-dst"
+                    class="form-select form-select-sm mb-3"
+                  ></select>
+
+                  <button
+                    onclick="mod2Generate()"
+                    class="btn btn-outline-secondary btn-sm w-100 mb-2"
+                  >
+                    🔀 Random Topology
+                  </button>
+                  <button
+                    onclick="mod2Run()"
+                    class="btn btn-info btn-sm w-100 fw-bold"
+                  >
+                    ▶ Find Path
+                  </button>
+                </div>
+              </div>
+
+              <div class="card mt-3" id="m2-result-card" style="display: none">
+                <div class="card-header">
+                  <h6 class="mb-0 text-success">✅ Kết quả</h6>
+                </div>
+                <div class="card-body" id="m2-result-body"></div>
+              </div>
+
+              <div class="card mt-3" id="m2-table-card" style="display: none">
+                <div class="card-header">
+                  <h6 class="mb-0 text-secondary">🗃 Routing Table</h6>
+                </div>
+                <div class="card-body p-0">
+                  <table class="table table-dark table-sm mb-0">
+                    <thead>
+                      <tr>
+                        <th>Node</th>
+                        <th>Dist</th>
+                        <th>Via</th>
+                      </tr>
+                    </thead>
+                    <tbody id="m2-rtable"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-9">
+              <div class="card" style="height: 550px">
+                <div class="card-header">
+                  <h6 class="mb-0 text-secondary">
+                    Network Graph
+                    <span class="text-muted small ms-2"
+                      >(click "Random Topology" để bắt đầu)</span
+                    >
+                  </h6>
+                </div>
+                <div
+                  class="card-body p-0"
+                  style="height: 490px; overflow: hidden"
+                >
+                  <svg
+                    id="m2-svg"
+                    width="100%"
+                    height="100%"
+                    viewBox="0 0 720 490"
+                    style="background: #060810; border-radius: 0 0 8px 8px"
+                  ></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- MODULE 3: TCP vs UDP                                         -->
+      <!-- ============================================================ -->
+      <div class="tab-pane fade" id="mod3">
+        <div class="container py-4">
+          <div class="module-title">🔗 Transport Layer — TCP vs UDP</div>
+
+          <div class="row g-3">
+            <div class="col-lg-3">
+              <div class="card">
+                <div class="card-header">
+                  <h6 class="mb-0 text-info">⚙️ Cấu hình</h6>
+                </div>
+                <div class="card-body">
+                  <label class="form-label text-secondary small"
+                    >Chọn giao thức</label
+                  >
+                  <div class="d-flex gap-2 mb-3">
+                    <button
+                      class="proto-btn active-tcp flex-fill"
+                      id="btn-tcp"
+                      onclick="mod3SelectProto('TCP')"
+                    >
+                      TCP
+                    </button>
+                    <button
+                      class="proto-btn flex-fill"
+                      id="btn-udp"
+                      onclick="mod3SelectProto('UDP')"
+                    >
+                      UDP
+                    </button>
+                  </div>
+
+                  <label class="form-label text-secondary small"
+                    >Số packets gửi</label
+                  >
+                  <input
+                    type="range"
+                    id="m3-numPkt"
+                    class="form-range"
+                    min="3"
+                    max="8"
+                    value="5"
+                    oninput="
+                      document.getElementById('m3-pktVal').textContent =
+                        this.value
+                    "
+                  />
+                  <div class="text-center mb-3">
+                    <span class="text-info fw-bold" id="m3-pktVal">5</span>
+                    packets
+                  </div>
+
+                  <label class="form-label text-secondary small"
+                    >Packet Loss Rate</label
+                  >
+                  <input
+                    type="range"
+                    id="m3-loss"
+                    class="form-range"
+                    min="0"
+                    max="60"
+                    value="25"
+                    oninput="
+                      document.getElementById('m3-lossVal').textContent =
+                        this.value + '%'
+                    "
+                  />
+                  <div class="text-center mb-3 text-secondary small">
+                    Loss: <span id="m3-lossVal">25%</span>
+                  </div>
+
+                  <button
+                    onclick="mod3Run()"
+                    class="btn btn-info w-100 fw-bold"
+                  >
+                    ▶ Simulate
+                  </button>
+                </div>
+              </div>
+
+              <div class="card mt-3" id="m3-stats-card" style="display: none">
+                <div class="card-header">
+                  <h6 class="mb-0 text-secondary">📊 Thống kê</h6>
+                </div>
+                <div class="card-body" id="m3-stats"></div>
+              </div>
+            </div>
+
+            <div class="col-lg-9">
+              <div class="card mb-3">
+                <div class="card-header">
+                  <h6 class="mb-0 text-secondary">🕐 Time-Space Diagram</h6>
+                </div>
+                <div
+                  class="card-body p-0"
+                  style="overflow-y: auto; max-height: 420px"
+                >
+                  <svg
+                    id="m3-svg"
+                    width="100%"
+                    viewBox="0 0 620 400"
+                    style="background: #060810; display: block"
+                  ></svg>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-header">
+                  <h6 class="mb-0 text-secondary">📋 Event Log</h6>
+                </div>
+                <div class="card-body p-0">
+                  <div class="log-display" id="m3-log"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- MODULE 4: APPLICATION LAYER                                  -->
+      <!-- ============================================================ -->
+      <div class="tab-pane fade" id="mod4">
+        <div class="container py-4">
+          <div class="module-title">🌍 Application Layer — DNS & HTTP</div>
+
+          <ul class="nav nav-pills mb-4" id="m4-pills">
+            <li class="nav-item">
+              <a class="nav-link active" data-bs-toggle="pill" href="#m4-dns"
+                >🔍 DNS Resolution</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="pill" href="#m4-http"
+                >📡 HTTP Request</a
+              >
+            </li>
+          </ul>
+
+          <div class="tab-content">
+            <!-- DNS Sub-tab -->
+            <div class="tab-pane fade show active" id="m4-dns">
+              <div class="row g-3">
+                <div class="col-lg-4">
+                  <div class="card">
+                    <div class="card-header">
+                      <h6 class="mb-0 text-info">🔍 DNS Lookup</h6>
+                    </div>
+                    <div class="card-body">
+                      <label class="form-label text-secondary small"
+                        >Domain cần resolve</label
+                      >
+                      <select
+                        id="m4-domain"
+                        class="form-select form-select-sm mb-3"
+                      >
+                        <option value="google.com">google.com</option>
+                        <option value="facebook.com">facebook.com</option>
+                        <option value="github.com">github.com</option>
+                        <option value="youtube.com">youtube.com</option>
+                        <option value="example.edu.vn">example.edu.vn</option>
+                      </select>
+                      <div class="form-check form-switch mb-3">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="m4-cache"
+                        />
+                        <label
+                          class="form-check-label text-secondary small"
+                          for="m4-cache"
+                          >Cache hit (bỏ qua các bước)</label
+                        >
+                      </div>
+                      <button
+                        onclick="mod4RunDNS()"
+                        class="btn btn-info w-100 fw-bold"
+                      >
+                        ▶ Resolve
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-8">
+                  <div class="card">
+                    <div class="card-header">
+                      <h6 class="mb-0 text-secondary">DNS Resolution Path</h6>
+                    </div>
+                    <div class="card-body">
+                      <div id="m4-dns-tree" class="dns-tree mb-3"></div>
+                      <div
+                        class="log-display"
+                        id="m4-dns-log"
+                        style="max-height: 200px"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- HTTP Sub-tab -->
+            <div class="tab-pane fade" id="m4-http">
+              <div class="row g-3">
+                <div class="col-lg-4">
+                  <div class="card">
+                    <div class="card-header">
+                      <h6 class="mb-0 text-info">📡 HTTP Request</h6>
+                    </div>
+                    <div class="card-body">
+                      <label class="form-label text-secondary small"
+                        >Method</label
+                      >
+                      <select
+                        id="m4-method"
+                        class="form-select form-select-sm mb-2"
+                      >
+                        <option>GET</option>
+                        <option>POST</option>
+                        <option>HEAD</option>
+                      </select>
+                      <label class="form-label text-secondary small">URL</label>
+                      <select
+                        id="m4-url"
+                        class="form-select form-select-sm mb-2"
+                      >
+                        <option value="/index.html">/index.html</option>
+                        <option value="/api/data.json">/api/data.json</option>
+                        <option value="/images/logo.png">
+                          /images/logo.png
+                        </option>
+                        <option value="/login">/login</option>
+                      </select>
+                      <label class="form-label text-secondary small"
+                        >HTTP Version</label
+                      >
+                      <select
+                        id="m4-version"
+                        class="form-select form-select-sm mb-3"
+                      >
+                        <option>HTTP/1.1</option>
+                        <option>HTTP/2</option>
+                      </select>
+                      <button
+                        onclick="mod4RunHTTP()"
+                        class="btn btn-info w-100 fw-bold"
+                      >
+                        ▶ Send Request
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-8">
+                  <div class="row g-3">
+                    <div class="col-6">
+                      <div class="card h-100">
+                        <div class="card-header">
+                          <h6 class="mb-0 text-cyan">📤 Request</h6>
+                        </div>
+                        <div class="card-body p-0">
+                          <div
+                            class="http-box"
+                            id="m4-req"
+                            style="min-height: 200px"
+                          >
+                            <span class="text-muted small fst-italic"
+                              >Nhấn "Send Request" để xem...</span
+                            >
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <div class="card h-100">
+                        <div class="card-header">
+                          <h6 class="mb-0 text-success">📥 Response</h6>
+                        </div>
+                        <div class="card-body p-0">
+                          <div
+                            class="http-box"
+                            id="m4-res"
+                            style="min-height: 200px"
+                          >
+                            <span class="text-muted small fst-italic"
+                              >Đang chờ request...</span
+                            >
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- MODULE 5: END-TO-END                                         -->
+      <!-- ============================================================ -->
+      <div class="tab-pane fade" id="mod5">
+        <div class="container py-4">
+          <div class="module-title e2e-title">
+            ⚡ End-to-End Simulation — Full Internet Stack
+          </div>
+
+          <div class="row g-3">
+            <div class="col-lg-3">
+              <div class="card">
+                <div class="card-header">
+                  <h6 class="mb-0 text-orange">🎯 Kịch bản</h6>
+                </div>
+                <div class="card-body">
+                  <label class="form-label text-secondary small"
+                    >Domain truy cập</label
+                  >
+                  <select
+                    id="m5-domain"
+                    class="form-select form-select-sm mb-2"
+                  >
+                    <option>google.com</option>
+                    <option>github.com</option>
+                    <option>youtube.com</option>
+                  </select>
+                  <label class="form-label text-secondary small"
+                    >File cần tải (KB)</label
+                  >
+                  <input
+                    type="number"
+                    id="m5-filesize"
+                    class="form-control form-control-sm mb-3"
+                    value="50"
+                    min="1"
+                    max="500"
+                  />
+                  <label class="form-label text-secondary small"
+                    >Tốc độ mạng (Kbps)</label
+                  >
+                  <input
+                    type="number"
+                    id="m5-bandwidth"
+                    class="form-control form-control-sm mb-3"
+                    value="512"
+                    min="64"
+                  />
+
+                  <button onclick="mod5Run()" class="btn btn-e2e w-100 fw-bold">
+                    🚀 Run Simulation
+                  </button>
+                  <button
+                    onclick="mod5Reset()"
+                    class="btn btn-outline-secondary btn-sm w-100 mt-2"
+                  >
+                    ↺ Reset
+                  </button>
+                </div>
+              </div>
+
+              <div class="card mt-3" id="m5-summary-card" style="display: none">
+                <div class="card-header">
+                  <h6 class="mb-0 text-orange">📊 Kết quả</h6>
+                </div>
+                <div class="card-body" id="m5-summary-body"></div>
+              </div>
+            </div>
+
+            <div class="col-lg-9">
+              <!-- Pipeline Steps -->
+              <div class="card mb-3">
+                <div class="card-header">
+                  <h6 class="mb-0 text-orange">🔄 Pipeline (TCP/IP Stack)</h6>
+                </div>
+                <div class="card-body">
+                  <div id="m5-pipeline">
+                    <div class="pipeline-step" id="ps-dns">
+                      <div class="step-icon">🔍</div>
+                      <div class="step-content">
+                        <div class="step-name">DNS Resolution</div>
+                        <div class="step-desc text-secondary small">
+                          Resolve domain → IP address
+                        </div>
+                      </div>
+                      <div class="step-status" id="pss-dns">⏳ Waiting</div>
+                    </div>
+                    <div class="pipeline-connector">↓</div>
+                    <div class="pipeline-step" id="ps-tcp">
+                      <div class="step-icon">🤝</div>
+                      <div class="step-content">
+                        <div class="step-name">TCP 3-Way Handshake</div>
+                        <div class="step-desc text-secondary small">
+                          SYN → SYN-ACK → ACK
+                        </div>
+                      </div>
+                      <div class="step-status" id="pss-tcp">⏳ Waiting</div>
+                    </div>
+                    <div class="pipeline-connector">↓</div>
+                    <div class="pipeline-step" id="ps-http">
+                      <div class="step-icon">📡</div>
+                      <div class="step-content">
+                        <div class="step-name">HTTP GET Request</div>
+                        <div class="step-desc text-secondary small">
+                          Send request to server
+                        </div>
+                      </div>
+                      <div class="step-status" id="pss-http">⏳ Waiting</div>
+                    </div>
+                    <div class="pipeline-connector">↓</div>
+                    <div class="pipeline-step" id="ps-route">
+                      <div class="step-icon">🗺️</div>
+                      <div class="step-content">
+                        <div class="step-name">Packet Routing</div>
+                        <div class="step-desc text-secondary small">
+                          Dijkstra → optimal path
+                        </div>
+                      </div>
+                      <div class="step-status" id="pss-route">⏳ Waiting</div>
+                    </div>
+                    <div class="pipeline-connector">↓</div>
+                    <div class="pipeline-step" id="ps-recv">
+                      <div class="step-icon">📥</div>
+                      <div class="step-content">
+                        <div class="step-name">Data Received</div>
+                        <div class="step-desc text-secondary small">
+                          Reassemble packets → response
+                        </div>
+                      </div>
+                      <div class="step-status" id="pss-recv">⏳ Waiting</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Animation + Log -->
+              <div class="row g-3">
+                <div class="col-lg-6">
+                  <div class="card">
+                    <div class="card-header">
+                      <h6 class="mb-0 text-secondary">🎬 Animation</h6>
+                    </div>
+                    <div class="card-body p-0">
+                      <svg
+                        id="m5-svg"
+                        width="100%"
+                        viewBox="0 0 400 200"
+                        style="
+                          background: #060810;
+                          border-radius: 0 0 8px 8px;
+                          display: block;
+                        "
+                      ></svg>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="card">
+                    <div class="card-header">
+                      <h6 class="mb-0 text-secondary">📋 System Log</h6>
+                    </div>
+                    <div class="card-body p-0">
+                      <div
+                        class="log-display"
+                        id="m5-log"
+                        style="max-height: 200px"
+                      >
+                        <span class="text-muted small"
+                          >[SYSTEM] Ready. Press "Run Simulation"...</span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- end tab-content -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/module1.js"></script>
+    <script src="js/module2.js"></script>
+    <script src="js/module3.js"></script>
+    <script src="js/module4.js"></script>
+    <script src="js/module5.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>
