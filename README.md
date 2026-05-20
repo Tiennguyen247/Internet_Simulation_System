@@ -15,8 +15,8 @@ Nghe phức tạp? Trang web này biến tất cả quá trình đó thành **h�
 
 ## 🚀 Cách mở trang web
 
-1. Tải về 3 file: `index.html`, `style.css`, `script.js`
-2. Đặt cả 3 file vào **cùng một thư mục**
+1. Tải về 2 file và 1 folder: `index.html`, `style.css`, `js`
+2. Đặt cả 2 file và 1 folder vào **cùng một thư mục**
 3. Double-click vào file `index.html`
 4. Trang tự mở trong trình duyệt — **không cần cài thêm gì**
 
